@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A Flower For You ✨</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: radial-gradient(circle at center, #180928 0%, #06020c 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      position: relative;
+    }
+
+    /* Interactive background canvas for floating glowing fireflies */
+    canvas#particles {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .flower-wrapper {
+      position: relative;
+      width: 360px;
+      height: 360px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      z-index: 2;
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .flower-wrapper:active {
+      transform: scale(0.96);
+    }
+
+    /* Core Pulsing Glow */
+    .glow-core {
+      position: absolute;
+      width: 150px;
+      height: 150px;
+      background: radial-gradient(circle, rgba(255, 230, 180, 0.95) 0%, rgba(255, 110, 185, 0.6) 45%, transparent 75%);
+      border-radius: 50%;
+      filter: blur(25px);
+      animation: pulseGlow 3.5s ease-in-out infinite alternate;
+      z-index: 1;
+    }
+
+    /* Main SVG Frame */
+    svg.lotus {
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+      filter: drop-shadow(0 0 16px rgba(255, 130, 195, 0.65)) drop-shadow(0 0 35px rgba(230, 185, 75, 0.35));
+    }
+
+    /* Outer Gold Filigree Lines */
+    .vine {
+      fill: none;
+      stroke: #f7d58b;
+      stroke-width: 1.5;
+      stroke-dasharray: 700;
+      stroke-dashoffset: 700;
+      animation: drawLine 3.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+      opacity: 0.85;
+    }
+
+    /* Petal Transitions */
+    .petal {
+      fill: url(#pink-petal-gradient);
+      stroke: rgba(255, 235, 245, 0.85);
+      stroke-width: 0.8;
+      opacity: 0;
+      transform-origin: 200px 270px;
+      animation: bloom 2.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .petal-layer-1 { animation-delay: 1.0s; }
+    .petal-layer-2 { animation-delay: 1.6s; }
+    .petal-layer-3 { animation-delay: 2.2s; }
+
+    .center-petal {
+      fill: url(#gold-petal-gradient);
+      opacity: 0;
+      transform-origin: 200px 270px;
+      animation: bloom 2.2s cubic-bezier(0.16, 1, 0.3, 1) 2.6s forwards;
+    }
+
+    /* Keyframes */
+    @keyframes drawLine {
+      to { stroke-dashoffset: 0; }
+    }
+
+    @keyframes bloom {
+      0% {
+        opacity: 0;
+        transform: scale(0.08) rotate(0deg);
+      }
+      50% {
+        opacity: 0.75;
+      }
+      100% {
+        opacity: 0.9;
+        transform: scale(1);
+      }
+    }
+
+    @keyframes pulseGlow {
+      0% {
+        transform: scale(0.85);
+        opacity: 0.55;
+      }
+      100% {
+        transform: scale(1.3);
+        opacity: 1;
+      }
+    }
+
+    /* Dynamic Message / Caption */
+    .message-container {
+      margin-top: 25px;
+      text-align: center;
+      z-index: 2;
+    }
+
+    .title {
+      color: #ffeef8;
+      font-size: 16px;
+      font-weight: 400;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      text-shadow: 0 0 12px rgba(255, 140, 200, 0.7);
+      transition: all 0.3s ease;
+    }
+
+    .subtitle {
+      margin-top: 8px;
+      color: rgba(255, 210, 235, 0.6);
+      font-size: 12px;
+      letter-spacing: 2px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Floating Particle Canvas -->
+  <canvas id="particles"></canvas>
+
+  <!-- Flower Interactive Element -->
+  <div class="flower-wrapper" id="flower">
+    <div class="glow-core"></div>
+    
+    <svg class="lotus" viewBox="0 0 400 400">
+      <defs>
+        <!-- Translucent Soft Pink Gradient -->
+        <linearGradient id="pink-petal-gradient" x1="0%" y1="100%" x2="0%" y2="0%">
+          <stop offset="0%" stop-color="#ff3b83" stop-opacity="0.3"/>
+          <stop offset="50%" stop-color="#ff9ecb" stop-opacity="0.6"/>
+          <stop offset="100%" stop-color="#ffffff" stop-opacity="0.95"/>
+        </linearGradient>
+
+        <!-- Golden Warm Core Gradient -->
+        <linearGradient id="gold-petal-gradient" x1="0%" y1="100%" x2="0%" y2="0%">
+          <stop offset="0%" stop-color="#e69c24" stop-opacity="0.4"/>
+          <stop offset="60%" stop-color="#ffd875" stop-opacity="0.85"/>
+          <stop offset="100%" stop-color="#ffffff" stop-opacity="1"/>
+        </linearGradient>
+      </defs>
+
+      <!-- Golden Vines Frame -->
+      <path class="vine" d="M 200 325 C 130 315 65 235 105 145 C 125 100 185 90 200 135 C 215 90 275 100 295 145 C 335 235 270 315 200 325 Z" />
+      <path class="vine" d="M 200 345 C 85 325 35 205 75 125 C 115 45 195 65 200 105 C 205 65 285 45 325 125 C 365 205 315 325 200 345 Z" />
+
+      <!-- Outer Petals (Layer 1) -->
+      <path class="petal petal-layer-1" d="M 200 270 C 115 260 55 175 95 135 C 125 105 168 175 200 270 Z" />
+      <path class="petal petal-layer-1" d="M 200 270 C 285 260 345 175 305 135 C 275 105 232 175 200 270 Z" />
+      <path class="petal petal-layer-1" d="M 200 270 C 135 230 105 125 155 85 C 178 105 188 175 200 270 Z" />
+      <path class="petal petal-layer-1" d="M 200 270 C 265 230 295 125 245 85 C 222 105 212 175 200 270 Z" />
+
+      <!-- Middle Petals (Layer 2) -->
+      <path class="petal petal-layer-2" d="M 200 270 C 145 210 135 135 175 95 C 188 125 194 185 200 270 Z" />
+      <path class="petal petal-layer-2" d="M 200 270 C 255 210 265 135 225 95 C 212 125 206 185 200 270 Z" />
+      <path class="petal petal-layer-2" d="M 200 270 C 165 190 175 105 200 75 C 225 105 235 190 200 270 Z" />
+
+      <!-- Core Petal (Layer 3) -->
+      <path class="center-petal" d="M 200 270 C 178 220 178 155 200 125 C 222 155 222 220 200 270 Z" />
+    </svg>
+  </div>
+
+  <!-- Editable Message Section -->
+  <div class="message-container">
+    <div class="title" id="messageText">For Someone Special ✨</div>
+    <div class="subtitle">Tap the flower</div>
+  </div>
+
+  <script>
+    // Ambient floating particles canvas
+    const canvas = document.getElementById('particles');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    class Particle {
+      constructor() {
+        this.reset();
+      }
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 2 + 0.5;
+        this.speedX = (Math.random() - 0.5) * 0.4;
+        this.speedY = -Math.random() * 0.5 - 0.2;
+        this.alpha = Math.random() * 0.6 + 0.2;
+      }
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        if (this.y < 0 || this.x < 0 || this.x > canvas.width) {
+          this.reset();
+          this.y = canvas.height + 10;
+        }
+      }
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 215, 170, ${this.alpha})`;
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = 'rgba(255, 180, 200, 0.8)';
+        ctx.fill();
+      }
+    }
+
+    for (let i = 0; i < 45; i++) {
+      particles.push(new Particle());
+    }
+
+    function animateParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(p => {
+        p.update();
+        p.draw();
+      });
+      requestAnimationFrame(animateParticles);
+    }
+    animateParticles();
+
+    // Interactive Tap Message Cycles
+    const flower = document.getElementById('flower');
+    const messageText = document.getElementById('messageText');
+    const quotes = [
+      "Just thought of you ✨",
+      "Blooming just for you 🌸",
+      "Hope this made you smile :)",
+      "Have a wonderful day 💖"
+    ];
+    let quoteIndex = 0;
+
+    flower.addEventListener('click', () => {
+      quoteIndex = (quoteIndex + 1) % quotes.length;
+      messageText.style.opacity = '0';
+      messageText.style.transform = 'translateY(5px)';
+      
+      setTimeout(() => {
+        messageText.textContent = quotes[quoteIndex];
+        messageText.style.opacity = '1';
+        messageText.style.transform = 'translateY(0)';
+      }, 250);
+    });
+  </script>
+</body>
+</html>
